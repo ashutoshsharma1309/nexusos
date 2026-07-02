@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './themes.css';
+
+@layer base {
+  * {
+    border-color: rgb(var(--color-border) / 0.08);
+  }
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body {
+    background: rgb(var(--color-bg));
+    color: rgb(var(--color-fg));
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgb(var(--color-accent) / 0.35);
+  }
+
+  /* Custom scrollbars that respect the active theme. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--color-fg) / 0.16);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--color-fg) / 0.28);
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-accent));
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* ── Surface hierarchy ──────────────────────────────────────
+     Three frosted tiers. Each stacks a base fill, a top-lit sheen
+     (via ::before) so light reads as coming from above, and a
+     hairline border. Windows use .glass, floating chrome uses
+     .glass-strong, the deepest overlays use .glass-heavy. */
+  .glass,
+  .glass-strong,
+  .glass-heavy {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid rgb(var(--color-border) / 0.1);
+  }
+  .glass::before,
+  .glass-strong::before,
+  .glass-heavy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.05), transparent 40%);
+    pointer-events: none;
+  }
+  .glass {
+    background: rgb(var(--color-surface) / 0.7);
+    backdrop-filter: blur(var(--blur-glass)) saturate(1.7);
+    -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.7);
+  }
+  .glass-strong {
+    background: rgb(var(--color-overlay) / 0.82);
+    backdrop-filter: blur(var(--blur-heavy)) saturate(1.9);
+    -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.9);
+    border-color: rgb(var(--color-border) / 0.12);
+  }
+  .glass-heavy {
+    background: rgb(var(--color-bg) / 0.88);
+    backdrop-filter: blur(var(--blur-heavy)) saturate(2);
+    -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(2);
+  }
+
+  /* Ambient wallpaper-aware glow that tracks the pointer. */
+  .ambient-glow {
+    background: radial-gradient(
+      60rem 60rem at var(--pointer-x) var(--pointer-y),
+      rgb(var(--color-accent) / 0.14),
+      transparent 55%
+    );
+  }
+
+  /* Skeleton shimmer for loading states. */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: rgb(var(--color-fg) / 0.06);
+    border-radius: var(--radius-sm);
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgb(var(--color-fg) / 0.08), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.4s infinite;
+  }
+
+  /* Pressable primitive: hover lifts, active presses in. */
+  .pressable {
+    transition:
+      transform var(--dur, 0.14s) var(--ease-smooth),
+      background-color 0.14s var(--ease-smooth);
+  }
+  .pressable:active {
+    transform: scale(0.97);
+  }
+}
+
+/* Reduce-transparency accessibility mode: make frosted surfaces opaque. */
+[data-transparency='reduced'] .glass,
+[data-transparency='reduced'] .glass-strong {
+  background: rgb(var(--color-overlay)) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* High-contrast accessibility mode (Settings → Accessibility). */
+[data-contrast='high'] {
+  --color-border: 255 255 255;
+}
+[data-contrast='high'] * {
+  border-color: rgb(var(--color-fg) / 0.4) !important;
+}
+
+/* Global reduced-motion escape hatch, toggled from Settings and honoring OS preference. */
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

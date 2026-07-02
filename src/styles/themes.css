@@ -1,0 +1,201 @@
+/**
+ * Theme tokens. Each theme sets color channels as space-separated RGB triples so that
+ * Tailwind's `rgb(var(--x) / <alpha>)` can apply opacity. Themes are selected by setting
+ * `data-theme` on <html>; the ThemeProvider persists the choice to IndexedDB.
+ *
+ * Shape tokens (radius/shadow/blur) live on :root and are theme-independent by default,
+ * though the "glass" theme overrides blur/shadow for a heavier frosted look.
+ */
+
+:root {
+  /* ── Radius scale ─────────────────────────────────────────── */
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-window: 16px;
+
+  /* ── Elevation: a 5-step depth ladder. Higher surfaces cast a
+       longer, softer ambient shadow plus a tight contact shadow,
+       and carry a hairline top highlight for a lit-from-above feel. */
+  --hairline: inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+  --elevation-0: 0 0 0 1px rgb(0 0 0 / 0.04);
+  --elevation-1: 0 1px 2px -1px rgb(0 0 0 / 0.4), var(--hairline);
+  --elevation-2: 0 4px 12px -4px rgb(0 0 0 / 0.45), 0 1px 3px -1px rgb(0 0 0 / 0.4),
+    var(--hairline);
+  --elevation-3: 0 12px 28px -8px rgb(0 0 0 / 0.5), 0 3px 8px -3px rgb(0 0 0 / 0.4),
+    var(--hairline);
+  --elevation-4: 0 24px 60px -14px rgb(0 0 0 / 0.6), 0 8px 18px -6px rgb(0 0 0 / 0.45),
+    var(--hairline);
+
+  --shadow-window: var(--elevation-3);
+  --shadow-window-focused: var(--elevation-4);
+  --shadow-dock: 0 18px 50px -12px rgb(0 0 0 / 0.55), var(--hairline);
+  --shadow-popover: var(--elevation-3);
+
+  /* ── Blur tiers ───────────────────────────────────────────── */
+  --blur-glass: 22px;
+  --blur-thin: 10px;
+  --blur-heavy: 40px;
+
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Accent is a per-user override applied on top of the theme (Settings → Appearance). */
+  --color-accent: var(--theme-accent);
+  --color-accent-fg: var(--theme-accent-fg);
+
+  /* Ambient light position, driven by the pointer for wallpaper-aware glow. */
+  --pointer-x: 50%;
+  --pointer-y: 40%;
+}
+
+/* ── Dark (default) ─────────────────────────────────────────── */
+[data-theme='dark'] {
+  --color-bg: 10 11 16;
+  --color-surface: 22 24 33;
+  --color-surface-2: 32 35 47;
+  --color-overlay: 16 18 26;
+  --color-border: 255 255 255;
+  --color-muted: 60 64 82;
+  --color-fg: 236 238 246;
+  --color-fg-muted: 148 154 176;
+  --theme-accent: 99 132 255;
+  --theme-accent-fg: 255 255 255;
+  --color-success: 74 210 149;
+  --color-warning: 240 189 82;
+  --color-danger: 244 105 112;
+  --wallpaper: radial-gradient(120% 120% at 15% 10%, #1b2450 0%, #0a0b10 55%),
+    radial-gradient(90% 90% at 85% 90%, #2a1846 0%, transparent 60%);
+}
+
+/* ── Light ──────────────────────────────────────────────────── */
+[data-theme='light'] {
+  --color-bg: 238 240 246;
+  --color-surface: 255 255 255;
+  --color-surface-2: 244 246 251;
+  --color-overlay: 255 255 255;
+  --color-border: 15 23 42;
+  --color-muted: 210 214 226;
+  --color-fg: 22 27 42;
+  --color-fg-muted: 96 104 128;
+  --theme-accent: 79 108 255;
+  --theme-accent-fg: 255 255 255;
+  --color-success: 22 163 110;
+  --color-warning: 202 138 4;
+  --color-danger: 220 68 76;
+  --wallpaper: radial-gradient(120% 120% at 20% 0%, #dfe6ff 0%, #eef0f6 55%),
+    radial-gradient(90% 90% at 90% 100%, #f3e6ff 0%, transparent 60%);
+}
+
+/* ── Glass ──────────────────────────────────────────────────── */
+[data-theme='glass'] {
+  --color-bg: 12 14 22;
+  --color-surface: 40 44 60;
+  --color-surface-2: 54 60 80;
+  --color-overlay: 30 34 48;
+  --color-border: 255 255 255;
+  --color-muted: 90 96 120;
+  --color-fg: 240 242 250;
+  --color-fg-muted: 176 182 204;
+  --theme-accent: 122 162 255;
+  --theme-accent-fg: 255 255 255;
+  --color-success: 88 220 160;
+  --color-warning: 246 196 96;
+  --color-danger: 248 120 128;
+  --blur-glass: 30px;
+  --shadow-window: 0 20px 60px -18px rgb(0 0 0 / 0.6), inset 0 1px 0 0 rgb(255 255 255 / 0.08);
+  --wallpaper: linear-gradient(135deg, #1a1f3a 0%, #2d1f45 50%, #0e1424 100%);
+}
+
+/* ── Cyberpunk ──────────────────────────────────────────────── */
+[data-theme='cyberpunk'] {
+  --color-bg: 8 4 18;
+  --color-surface: 24 10 40;
+  --color-surface-2: 38 16 60;
+  --color-overlay: 18 8 32;
+  --color-border: 255 0 200;
+  --color-muted: 80 30 110;
+  --color-fg: 245 230 255;
+  --color-fg-muted: 190 130 220;
+  --theme-accent: 255 45 180;
+  --theme-accent-fg: 12 2 20;
+  --color-success: 60 255 200;
+  --color-warning: 255 214 0;
+  --color-danger: 255 60 100;
+  --wallpaper: radial-gradient(100% 100% at 0% 0%, #2a0a52 0%, #08040f 60%),
+    radial-gradient(80% 80% at 100% 100%, #52063f 0%, transparent 55%);
+}
+
+/* ── Tokyo Night ────────────────────────────────────────────── */
+[data-theme='tokyo-night'] {
+  --color-bg: 26 27 38;
+  --color-surface: 36 40 59;
+  --color-surface-2: 47 51 77;
+  --color-overlay: 31 34 51;
+  --color-border: 122 162 247;
+  --color-muted: 65 72 104;
+  --color-fg: 192 202 245;
+  --color-fg-muted: 130 139 184;
+  --theme-accent: 122 162 247;
+  --theme-accent-fg: 26 27 38;
+  --color-success: 158 206 106;
+  --color-warning: 224 175 104;
+  --color-danger: 247 118 142;
+  --wallpaper: radial-gradient(120% 120% at 10% 10%, #24283b 0%, #16161e 60%);
+}
+
+/* ── Nord ───────────────────────────────────────────────────── */
+[data-theme='nord'] {
+  --color-bg: 46 52 64;
+  --color-surface: 59 66 82;
+  --color-surface-2: 67 76 94;
+  --color-overlay: 54 61 76;
+  --color-border: 136 192 208;
+  --color-muted: 76 86 106;
+  --color-fg: 236 239 244;
+  --color-fg-muted: 163 176 197;
+  --theme-accent: 136 192 208;
+  --theme-accent-fg: 46 52 64;
+  --color-success: 163 190 140;
+  --color-warning: 235 203 139;
+  --color-danger: 191 97 106;
+  --wallpaper: radial-gradient(120% 120% at 20% 0%, #3b4252 0%, #2e3440 60%);
+}
+
+/* ── Gruvbox ────────────────────────────────────────────────── */
+[data-theme='gruvbox'] {
+  --color-bg: 40 40 40;
+  --color-surface: 50 48 47;
+  --color-surface-2: 60 56 54;
+  --color-overlay: 45 43 42;
+  --color-border: 215 153 33;
+  --color-muted: 80 73 69;
+  --color-fg: 235 219 178;
+  --color-fg-muted: 168 153 132;
+  --theme-accent: 215 153 33;
+  --theme-accent-fg: 40 40 40;
+  --color-success: 152 151 26;
+  --color-warning: 215 153 33;
+  --color-danger: 204 36 29;
+  --wallpaper: radial-gradient(120% 120% at 10% 10%, #3c3836 0%, #282828 60%);
+}
+
+/* ── Catppuccin (Mocha) ─────────────────────────────────────── */
+[data-theme='catppuccin'] {
+  --color-bg: 30 30 46;
+  --color-surface: 49 50 68;
+  --color-surface-2: 69 71 90;
+  --color-overlay: 40 41 60;
+  --color-border: 203 166 247;
+  --color-muted: 88 91 112;
+  --color-fg: 205 214 244;
+  --color-fg-muted: 166 173 200;
+  --theme-accent: 203 166 247;
+  --theme-accent-fg: 30 30 46;
+  --color-success: 166 227 161;
+  --color-warning: 249 226 175;
+  --color-danger: 243 139 168;
+  --wallpaper: radial-gradient(120% 120% at 15% 5%, #313244 0%, #1e1e2e 60%);
+}
