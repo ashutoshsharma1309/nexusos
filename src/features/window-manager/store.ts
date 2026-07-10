@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { Rect } from '@/lib/geometry';
 import { clamp } from '@/lib/geometry';
+import { isMobileViewport } from '@/lib/viewport';
 import { getApp } from '@/features/apps/registry';
 import type { OpenWindowOptions, WindowInstance, WindowState } from './types';
 
@@ -67,20 +68,23 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
     const height = clamp(options.rect?.height ?? defaults.height, 240, vh - 48);
     const cascade = (get().spawnCount % 6) * CASCADE_STEP;
     const rect: Rect = {
-      x: options.rect?.x ?? clamp((vw - width) / 2 + cascade - 70, 8, vw - width - 8),
-      y: options.rect?.y ?? clamp((vh - height) / 2 + cascade - 90, 40, vh - height - 8),
+      x: options.rect?.x ?? clamp((vw - width) / 2 + cascade - 70, 8, Math.max(8, vw - width - 8)),
+      y: options.rect?.y ?? clamp((vh - height) / 2 + cascade - 90, 40, Math.max(40, vh - height - 8)),
       width,
       height,
     };
 
+    // On phones the floating-window model doesn't work: open apps full-bleed and
+    // keep a sensible rect to restore to if the viewport later grows.
+    const mobile = isMobileViewport();
     const id = nanoid();
     const instance: WindowInstance = {
       id,
       appId,
       title: options.title ?? app.title,
-      rect,
-      restoreRect: null,
-      state: 'normal',
+      rect: mobile ? { x: 0, y: 0, width: vw, height: vh } : rect,
+      restoreRect: mobile ? rect : null,
+      state: mobile ? 'maximized' : 'normal',
       zIndex: get().topZ + 1,
       focused: true,
       meta: options.meta,

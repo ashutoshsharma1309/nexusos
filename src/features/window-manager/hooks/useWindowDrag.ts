@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { clamp, detectSnapZone, rectForSnapZone, type Rect, type SnapZone } from '@/lib/geometry';
+import { isMobileViewport } from '@/lib/viewport';
 import { useWindowStore } from '../store';
 import type { WindowInstance } from '../types';
 
@@ -25,6 +26,8 @@ export function useWindowDrag(win: WindowInstance) {
       // Ignore drags that start on interactive controls in the title bar.
       if ((event.target as HTMLElement).closest('[data-no-drag]')) return;
       focus(win.id);
+      // On phones windows are full-bleed; dragging/snapping would only misplace them.
+      if (isMobileViewport()) return;
 
       const startRect = win.state === 'maximized' && win.restoreRect ? win.restoreRect : win.rect;
       origin.current = { px: event.clientX, py: event.clientY, rect: startRect };

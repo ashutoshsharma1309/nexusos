@@ -3,7 +3,9 @@
 import { useMemo } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 import { LayoutGrid } from 'lucide-react';
+import { cn } from '@/lib/cn';
 import { spring } from '@/lib/motion';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { DOCK_APPS } from '@/features/apps/registry';
 import { useWindowStore } from '@/features/window-manager/store';
 import { useLauncherStore } from '@/features/launcher/store';
@@ -18,6 +20,7 @@ export function Dock() {
   const windows = useWindowStore((s) => s.windows);
   const openLauncher = useLauncherStore((s) => s.open);
   const items = useNotificationStore((s) => s.items);
+  const isMobile = useIsMobile();
 
   const runningAppIds = useMemo(() => new Set(windows.map((w) => w.appId)), [windows]);
   const focusedAppId = windows.find((w) => w.focused && w.state !== 'minimized')?.appId ?? null;
@@ -31,7 +34,7 @@ export function Dock() {
   }, [items]);
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-2.5 z-chrome flex justify-center">
+    <div className="pointer-events-none absolute inset-x-0 bottom-2.5 z-chrome flex justify-center px-2">
       <motion.nav
         aria-label="Dock"
         initial={{ y: 80, opacity: 0 }}
@@ -39,7 +42,12 @@ export function Dock() {
         transition={{ ...spring.glide, delay: 0.15 }}
         onPointerMove={(e) => mouseX.set(e.clientX)}
         onPointerLeave={() => mouseX.set(-1)}
-        className="glass-strong pointer-events-auto flex items-end gap-1.5 rounded-[26px] px-2.5 pb-2 pt-2 shadow-dock"
+        className={cn(
+          'glass-strong pointer-events-auto flex items-end gap-1.5 rounded-[26px] px-2.5 pb-2 pt-2 shadow-dock',
+          // On touch there's no magnification (no hover), so the row can safely
+          // scroll horizontally instead of overflowing the viewport.
+          isMobile && 'no-scrollbar max-w-full overflow-x-auto',
+        )}
       >
         <DockIcon
           icon={LayoutGrid}
