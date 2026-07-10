@@ -31,7 +31,7 @@ export function FileTree({ nodeId, name, depth, currentId, onSelect }: Props) {
         style={{ paddingLeft: depth * 12 + 8 }}
         className={cn(
           'flex w-full items-center gap-1 rounded-md py-1 pr-2 text-left text-xs transition-colors',
-          currentId === nodeId ? 'bg-accent/20 text-fg' : 'text-fg-muted hover:bg-white/5',
+          currentId === nodeId ? 'bg-accent/20 text-fg' : 'text-fg-muted hover:bg-fg/5',
         )}
       >
         <ChevronRight className={cn('h-3 w-3 shrink-0 transition-transform', open && 'rotate-90')} />

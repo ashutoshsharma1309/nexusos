@@ -26,7 +26,7 @@ function ThemeSwatch({ id, active, onClick }: { id: ThemeId; active: boolean; on
       data-theme={id}
       className={cn(
         'group relative overflow-hidden rounded-xl border p-3 text-left transition-all',
-        active ? 'border-accent ring-2 ring-accent/50' : 'border-white/10 hover:border-white/25',
+        active ? 'border-accent ring-2 ring-accent/50' : 'border-border/10 hover:border-border/25',
       )}
       style={{ background: 'rgb(var(--color-surface))' }}
     >
@@ -52,7 +52,7 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
       onClick={() => onChange(!checked)}
       className={cn(
         'relative h-6 w-10 shrink-0 rounded-full transition-colors',
-        checked ? 'bg-accent' : 'bg-white/15',
+        checked ? 'bg-accent' : 'bg-fg/15',
       )}
     >
       <span
@@ -67,7 +67,7 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
 
 function Row({ icon: Icon, title, desc, children }: { icon: typeof Zap; title: string; desc: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-white/5 p-3.5">
+    <div className="flex items-center gap-3 rounded-xl bg-fg/5 p-3.5">
       <Icon className="h-5 w-5 shrink-0 text-accent" />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-fg">{title}</p>
@@ -85,7 +85,7 @@ export default function Settings() {
 
   return (
     <div className="flex h-full">
-      <nav className="w-44 shrink-0 border-r border-white/5 p-3">
+      <nav className="w-44 shrink-0 border-r border-border/5 p-3">
         {SECTIONS.map((item) => (
           <button
             key={item}
@@ -93,7 +93,7 @@ export default function Settings() {
             onClick={() => setSection(item)}
             className={cn(
               'mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors',
-              section === item ? 'bg-accent/20 text-fg' : 'text-fg-muted hover:bg-white/5',
+              section === item ? 'bg-accent/20 text-fg' : 'text-fg-muted hover:bg-fg/5',
             )}
           >
             {item === 'Appearance' ? <Palette className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -122,7 +122,7 @@ export default function Settings() {
                   onClick={() => s.setAccent(null)}
                   className={cn(
                     'flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs transition-colors',
-                    s.accent === null ? 'border-accent text-fg' : 'border-white/10 text-fg-muted',
+                    s.accent === null ? 'border-accent text-fg' : 'border-border/10 text-fg-muted',
                   )}
                 >
                   <Sparkles className="h-3.5 w-3.5" /> Theme default

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Fuse from 'fuse.js';
+import { spring } from '@/lib/motion';
 import { Search, CornerDownLeft } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useLauncherStore } from './store';
@@ -70,7 +71,7 @@ export function CommandPalette() {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[10050] flex items-start justify-center pt-[14vh]"
+          className="fixed inset-0 z-modal flex items-start justify-center pt-[14vh]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -84,11 +85,11 @@ export function CommandPalette() {
             initial={{ opacity: 0, scale: 0.97, y: -8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: -8 }}
-            transition={{ type: 'spring', stiffness: 440, damping: 34 }}
+            transition={spring.snappy}
             onPointerDown={(e) => e.stopPropagation()}
             className="glass-strong relative w-[min(640px,92vw)] overflow-hidden rounded-2xl shadow-popover"
           >
-            <div className="flex items-center gap-3 border-b border-white/10 px-4">
+            <div className="flex items-center gap-3 border-b border-border/10 px-4">
               <Search className="h-4 w-4 shrink-0 text-fg-muted" />
               <input
                 ref={inputRef}
@@ -99,7 +100,7 @@ export function CommandPalette() {
                 aria-label="Command search"
                 className="h-12 flex-1 bg-transparent text-sm text-fg outline-none placeholder:text-fg-muted"
               />
-              <kbd className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-fg-muted">ESC</kbd>
+              <kbd className="rounded bg-fg/5 px-1.5 py-0.5 text-[10px] text-fg-muted">ESC</kbd>
             </div>
 
             <div ref={listRef} className="max-h-[46vh] overflow-y-auto p-2">
@@ -117,10 +118,10 @@ export function CommandPalette() {
                       onClick={() => runAt(index)}
                       className={cn(
                         'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors',
-                        index === active ? 'bg-accent/20' : 'hover:bg-white/5',
+                        index === active ? 'bg-accent/20' : 'hover:bg-fg/5',
                       )}
                     >
-                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5">
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-fg/5">
                         <Icon className="h-4 w-4 text-fg" />
                       </span>
                       <span className="min-w-0 flex-1">

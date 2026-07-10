@@ -41,25 +41,25 @@ export function NewFileScreen({ onCreated }: Props) {
               key={file}
               type="button"
               onClick={() => create(file, lang.template)}
-              className="group flex flex-col items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 text-left transition-colors hover:border-white/15 hover:bg-white/[0.06]"
+              className="group flex flex-col items-start gap-2 rounded-xl border border-border/[0.06] bg-fg/[0.03] p-3 text-left transition-colors hover:border-border/15 hover:bg-fg/[0.06]"
             >
               <span className="flex w-full items-center justify-between">
                 <FileCode2 className="h-5 w-5" style={{ color: `rgb(${lang.tint})` }} />
                 {lang.runnable && <Play className="h-3 w-3 fill-success text-success opacity-0 transition-opacity group-hover:opacity-100" />}
               </span>
               <span className="text-sm font-medium text-fg">{lang.label}</span>
-              <span className="font-mono text-[11px] text-fg-muted">{file}</span>
+              <span className="font-mono text-2xs text-fg-muted">{file}</span>
             </button>
           );
         })}
         <button
           type="button"
           onClick={() => create('untitled.txt', '')}
-          className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-white/10 bg-transparent p-3 text-left transition-colors hover:border-white/25 hover:bg-white/[0.04]"
+          className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border/10 bg-transparent p-3 text-left transition-colors hover:border-border/25 hover:bg-fg/[0.04]"
         >
           <FilePlus2 className="h-5 w-5 text-fg-muted" />
           <span className="text-sm font-medium text-fg">Blank file</span>
-          <span className="font-mono text-[11px] text-fg-muted">untitled.txt</span>
+          <span className="font-mono text-2xs text-fg-muted">untitled.txt</span>
         </button>
       </div>
     </div>

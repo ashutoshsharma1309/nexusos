@@ -49,7 +49,7 @@ function TitleBarImpl({ win, onPointerDown }: Props) {
       onDoubleClick={() => toggleMaximize(win.id)}
       className={cn(
         'flex h-10 shrink-0 items-center gap-3 px-3 select-none',
-        'border-b border-white/5',
+        'border-b border-border/5',
       )}
     >
       <div className="flex items-center gap-2" data-no-drag>

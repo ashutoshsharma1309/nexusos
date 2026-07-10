@@ -27,16 +27,16 @@ export function DesktopIcons({ selectedIds }: { selectedIds: Set<string> }) {
             onDoubleClick={() => open({ appId: app.id, singleton: true })}
             className={cn(
               'flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-colors',
-              selected ? 'bg-accent/25' : 'hover:bg-white/5',
+              selected ? 'bg-accent/25' : 'hover:bg-fg/5',
             )}
           >
             <span
-              className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 shadow-lg"
+              className="grid h-11 w-11 place-items-center rounded-xl border border-border/10 shadow-lg"
               style={{ background: `linear-gradient(160deg, rgb(${app.tint} / 0.9), rgb(${app.tint} / 0.5))` }}
             >
               <Icon className="h-6 w-6 text-white" />
             </span>
-            <span className="line-clamp-1 text-[11px] font-medium text-fg drop-shadow">
+            <span className="line-clamp-1 text-2xs font-medium text-fg drop-shadow">
               {app.title}
             </span>
           </button>

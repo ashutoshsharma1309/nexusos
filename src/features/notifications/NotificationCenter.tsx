@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { BellOff, Trash2, X } from 'lucide-react';
+import { spring } from '@/lib/motion';
 import { cn } from '@/lib/cn';
 import { useNotificationStore } from './store';
 import { TONE_COLOR, TONE_ICON } from './toneStyles';
@@ -26,7 +27,7 @@ export function NotificationCenter() {
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-[10020]"
+            className="fixed inset-0 z-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -37,10 +38,10 @@ export function NotificationCenter() {
             initial={{ x: 360, opacity: 0.4 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 360, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-            className="glass-strong fixed right-2 top-10 z-[10021] flex max-h-[80vh] w-[340px] flex-col overflow-hidden rounded-2xl shadow-popover"
+            transition={spring.glide}
+            className="glass-strong fixed right-2 top-10 z-popover flex max-h-[80vh] w-[340px] flex-col overflow-hidden rounded-2xl shadow-popover"
           >
-            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="flex items-center justify-between border-b border-border/10 px-4 py-3">
               <h2 className="text-sm font-semibold text-fg">Notifications</h2>
               <div className="flex items-center gap-1">
                 <button
@@ -75,7 +76,7 @@ export function NotificationCenter() {
                   return (
                     <div
                       key={item.id}
-                      className="group flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-white/5"
+                      className="group flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-fg/5"
                     >
                       <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', TONE_COLOR[item.tone])} />
                       <div className="min-w-0 flex-1">

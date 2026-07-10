@@ -95,16 +95,16 @@ export default function Editor({ window: win }: AppComponentProps) {
         }
       }}
     >
-      <div className="flex items-center gap-2 border-b border-white/5 px-2.5 py-1.5">
+      <div className="flex items-center gap-2 border-b border-border/5 px-2.5 py-1.5">
         <button
           type="button"
           onClick={() => setActiveFileId(null)}
           aria-label="New file"
-          className="flex items-center gap-1 rounded-md px-1.5 py-1 text-fg-muted transition-colors hover:bg-white/10 hover:text-fg"
+          className="flex items-center gap-1 rounded-md px-1.5 py-1 text-fg-muted transition-colors hover:bg-fg/10 hover:text-fg"
         >
           <FilePlus2 className="h-3.5 w-3.5" />
         </button>
-        <span className="h-4 w-px bg-white/10" aria-hidden />
+        <span className="h-4 w-px bg-fg/10" aria-hidden />
 
         {renaming ? (
           <input
@@ -118,13 +118,13 @@ export default function Editor({ window: win }: AppComponentProps) {
               setRenaming(false);
             }}
             onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-            className="w-40 rounded bg-white/10 px-1.5 py-0.5 text-xs text-fg outline-none"
+            className="w-40 rounded bg-fg/10 px-1.5 py-0.5 text-xs text-fg outline-none"
           />
         ) : (
           <button
             type="button"
             onClick={() => setRenaming(true)}
-            className="flex items-center gap-1.5 rounded px-1 py-0.5 text-xs text-fg transition-colors hover:bg-white/5"
+            className="flex items-center gap-1.5 rounded px-1 py-0.5 text-xs text-fg transition-colors hover:bg-fg/5"
             title="Click to rename"
           >
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: `rgb(${lang.tint})` }} />
@@ -138,7 +138,7 @@ export default function Editor({ window: win }: AppComponentProps) {
             <button
               type="button"
               onClick={() => setValue(lang.template)}
-              className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] text-fg-muted transition-colors hover:bg-white/10 hover:text-fg"
+              className="flex items-center gap-1.5 rounded-md px-2 py-1 text-2xs text-fg-muted transition-colors hover:bg-fg/10 hover:text-fg"
             >
               <Sparkles className="h-3 w-3" /> Insert template
             </button>
@@ -148,7 +148,7 @@ export default function Editor({ window: win }: AppComponentProps) {
               type="button"
               onClick={run}
               disabled={running}
-              className="flex items-center gap-1.5 rounded-md bg-success/15 px-2.5 py-1 text-[11px] font-medium text-success transition-colors hover:bg-success/25 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-md bg-success/15 px-2.5 py-1 text-2xs font-medium text-success transition-colors hover:bg-success/25 disabled:opacity-50"
             >
               <Play className="h-3 w-3 fill-current" /> Run
               <kbd className="ml-0.5 hidden opacity-70 sm:inline">⌘↵</kbd>
@@ -188,7 +188,7 @@ export default function Editor({ window: win }: AppComponentProps) {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center justify-between border-t border-white/5 px-3 py-1 text-[11px] text-fg-muted">
+      <div className="flex items-center justify-between border-t border-border/5 px-3 py-1 text-2xs text-fg-muted">
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full" style={{ background: `rgb(${lang.tint})` }} />
           {lang.label}

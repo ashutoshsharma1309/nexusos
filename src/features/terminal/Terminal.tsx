@@ -46,18 +46,18 @@ function CommandBlock({ block }: { block: Block }) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={spring.snappy}
-      className="group overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02]"
+      className="group overflow-hidden rounded-xl border border-border/[0.06] bg-fg/[0.02]"
     >
-      <div className="flex items-center gap-2 border-b border-white/[0.05] px-3 py-1.5">
+      <div className="flex items-center gap-2 border-b border-border/[0.05] px-3 py-1.5">
         <span className={cn('h-1.5 w-1.5 rounded-full', block.status === 'ok' ? 'bg-success' : 'bg-danger')} />
-        <span className="text-[11px] text-fg-muted">{block.path}</span>
+        <span className="text-2xs text-fg-muted">{block.path}</span>
         <ChevronRight className="h-3 w-3 text-fg-muted" />
         <span className="truncate text-[12px] font-medium text-fg">{block.command}</span>
         <button
           type="button"
           onClick={copy}
           aria-label="Copy command"
-          className="ml-auto rounded p-1 text-fg-muted opacity-0 transition-opacity hover:bg-white/10 hover:text-fg group-hover:opacity-100"
+          className="ml-auto rounded p-1 text-fg-muted opacity-0 transition-opacity hover:bg-fg/10 hover:text-fg group-hover:opacity-100"
         >
           {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
         </button>

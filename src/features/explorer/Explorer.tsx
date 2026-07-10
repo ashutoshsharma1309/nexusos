@@ -74,19 +74,19 @@ export default function Explorer() {
 
   return (
     <div className="flex h-full">
-      <aside className="w-52 shrink-0 overflow-y-auto border-r border-white/5 p-2">
+      <aside className="w-52 shrink-0 overflow-y-auto border-r border-border/5 p-2">
         <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-fg-muted">Favorites</p>
         <FileTree nodeId={FS_ROOT_ID} name="Home" depth={0} currentId={currentId} onSelect={setCurrentId} />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col" onContextMenu={(e) => contextFor(e, null)}>
-        <div className="flex items-center gap-1 border-b border-white/5 px-3 py-2 text-xs text-fg-muted">
+        <div className="flex items-center gap-1 border-b border-border/5 px-3 py-2 text-xs text-fg-muted">
           {(current?.name === '/' ? 'Home' : current?.name ?? 'Home')}
           <span className="ml-auto flex gap-1">
-            <button type="button" aria-label="New folder" onClick={() => void createAndEdit(currentId, 'dir')} className="rounded p-1 hover:bg-white/5 hover:text-fg">
+            <button type="button" aria-label="New folder" onClick={() => void createAndEdit(currentId, 'dir')} className="rounded p-1 hover:bg-fg/5 hover:text-fg">
               <FolderPlus className="h-3.5 w-3.5" />
             </button>
-            <button type="button" aria-label="New file" onClick={() => void createAndEdit(currentId, 'file')} className="rounded p-1 hover:bg-white/5 hover:text-fg">
+            <button type="button" aria-label="New file" onClick={() => void createAndEdit(currentId, 'file')} className="rounded p-1 hover:bg-fg/5 hover:text-fg">
               <FilePlus className="h-3.5 w-3.5" />
             </button>
           </span>
@@ -102,7 +102,7 @@ export default function Explorer() {
               type="button"
               onDoubleClick={() => openNode(node)}
               onContextMenu={(e) => contextFor(e, node)}
-              className="group flex flex-col items-center gap-1.5 rounded-xl p-2.5 transition-colors hover:bg-white/5"
+              className="group flex flex-col items-center gap-1.5 rounded-xl p-2.5 transition-colors hover:bg-fg/5"
             >
               {node.kind === 'dir' ? (
                 <Folder className="h-9 w-9 text-accent" />
@@ -126,10 +126,10 @@ export default function Explorer() {
                     setRenaming(null);
                   }}
                   onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-                  className="w-full rounded bg-white/10 px-1 text-center text-[11px] text-fg outline-none"
+                  className="w-full rounded bg-fg/10 px-1 text-center text-2xs text-fg outline-none"
                 />
               ) : (
-                <span className="line-clamp-2 text-center text-[11px] text-fg">{node.name}</span>
+                <span className="line-clamp-2 text-center text-2xs text-fg">{node.name}</span>
               )}
             </button>
           ))}

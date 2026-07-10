@@ -31,7 +31,7 @@ export function Dock() {
   }, [items]);
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-2.5 z-[9999] flex justify-center">
+    <div className="pointer-events-none absolute inset-x-0 bottom-2.5 z-chrome flex justify-center">
       <motion.nav
         aria-label="Dock"
         initial={{ y: 80, opacity: 0 }}
@@ -49,7 +49,7 @@ export function Dock() {
           mouseX={mouseX}
           onClick={openLauncher}
         />
-        <span className="mx-0.5 h-11 w-px self-center bg-white/10" aria-hidden />
+        <span className="mx-0.5 h-11 w-px self-center bg-fg/10" aria-hidden />
         {DOCK_APPS.map((app) => (
           <DockIcon
             key={app.id}

@@ -29,6 +29,21 @@ const config: Config = {
       borderRadius: {
         window: 'var(--radius-window)',
       },
+      fontSize: {
+        // The "caption" step used pervasively for chrome labels; was text-[11px].
+        '2xs': ['0.6875rem', { lineHeight: '1rem' }],
+      },
+      zIndex: {
+        // A legible compositing order for system chrome, replacing ad-hoc big numbers.
+        base: '0',
+        window: '10',
+        chrome: '40', // menu bar, dock
+        overlay: '50', // context menus, palette backdrop
+        popover: '60',
+        toast: '70',
+        modal: '80',
+        boot: '90',
+      },
       boxShadow: {
         window: 'var(--shadow-window)',
         dock: 'var(--shadow-dock)',

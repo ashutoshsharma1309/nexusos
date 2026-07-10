@@ -32,7 +32,7 @@ export default function About() {
           { icon: Cpu, label: 'Runtime', value: '100% Local' },
           { icon: Github, label: 'Backend', value: 'None' },
         ].map(({ icon: Icon, label, value }) => (
-          <div key={label} className="rounded-xl bg-white/5 p-3">
+          <div key={label} className="rounded-xl bg-fg/5 p-3">
             <Icon className="mb-1.5 h-4 w-4 text-accent" />
             <p className="text-[10px] uppercase tracking-wide text-fg-muted">{label}</p>
             <p className="text-sm font-medium text-fg">{value}</p>
@@ -42,7 +42,7 @@ export default function About() {
 
       <div className="flex flex-wrap justify-center gap-1.5">
         {STACK.map((tech) => (
-          <span key={tech} className="rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-fg-muted">
+          <span key={tech} className="rounded-full bg-fg/5 px-2.5 py-1 text-2xs text-fg-muted">
             {tech}
           </span>
         ))}

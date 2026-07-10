@@ -42,7 +42,7 @@ export function BootProvider({ children }: { children: React.ReactNode }) {
             key="boot"
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[99999] flex flex-col items-center justify-center gap-6 bg-bg"
+            className="fixed inset-0 z-boot flex flex-col items-center justify-center gap-6 bg-bg"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -52,7 +52,7 @@ export function BootProvider({ children }: { children: React.ReactNode }) {
             >
               <Sparkles className="h-8 w-8 text-accent-fg" />
             </motion.div>
-            <div className="h-1 w-40 overflow-hidden rounded-full bg-white/10">
+            <div className="h-1 w-40 overflow-hidden rounded-full bg-fg/10">
               <motion.div
                 className="h-full w-1/2 rounded-full bg-accent"
                 animate={{ x: ['-100%', '200%'] }}

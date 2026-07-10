@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
+import { spring } from '@/lib/motion';
 import { cn } from '@/lib/cn';
 
 export interface MenuAction {
@@ -50,16 +51,16 @@ export function ContextMenu({ state, onClose }: Props) {
     <AnimatePresence>
       {state && (
         <>
-          <div className="fixed inset-0 z-[10030]" onPointerDown={onClose} onContextMenu={(e) => { e.preventDefault(); onClose(); }} />
+          <div className="fixed inset-0 z-overlay" onPointerDown={onClose} onContextMenu={(e) => { e.preventDefault(); onClose(); }} />
           <motion.div
             ref={ref}
             role="menu"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.12 }}
+            transition={spring.snappy}
             style={{ left: pos.x, top: pos.y }}
-            className="glass-strong fixed z-[10031] min-w-[200px] rounded-xl p-1.5 shadow-popover"
+            className="glass-strong fixed z-popover min-w-[200px] rounded-xl p-1.5 shadow-popover"
           >
             {state.actions.map((action) => {
               const Icon = action.icon;

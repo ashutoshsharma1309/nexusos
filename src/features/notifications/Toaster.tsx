@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { spring } from '@/lib/motion';
 import { cn } from '@/lib/cn';
 import { useNotificationStore } from './store';
 import { TONE_COLOR, TONE_ICON } from './toneStyles';
@@ -23,7 +24,7 @@ export function Toaster() {
   }, [toasts, dismiss]);
 
   return (
-    <div className="pointer-events-none fixed right-3 top-11 z-[10040] flex w-80 flex-col gap-2">
+    <div className="pointer-events-none fixed right-3 top-11 z-toast flex w-80 flex-col gap-2">
       <AnimatePresence initial={false}>
         {toasts.map((t) => {
           const Icon = TONE_ICON[t.tone];
@@ -34,7 +35,7 @@ export function Toaster() {
               initial={{ opacity: 0, x: 40, scale: 0.96 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 40, scale: 0.96 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 34 }}
+              transition={spring.snappy}
               className="glass-strong pointer-events-auto flex items-start gap-3 rounded-xl p-3 shadow-popover"
             >
               <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', TONE_COLOR[t.tone])} />

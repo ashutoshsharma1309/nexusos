@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, ChevronDown, Loader2, Trash2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { spring } from '@/lib/motion';
+import { IconButton } from '@/components/ui/IconButton';
 import type { RunResult } from './runtime';
 
 interface Props {
@@ -23,18 +24,14 @@ export function RunPanel({ command, running, result, onClear, onClose }: Props) 
       animate={{ height: 200, opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
       transition={spring.snappy}
-      className="flex shrink-0 flex-col overflow-hidden border-t border-white/10 bg-black/40"
+      className="flex shrink-0 flex-col overflow-hidden border-t border-border/10 bg-black/40"
     >
-      <div className="flex items-center gap-2 border-b border-white/5 px-3 py-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-fg">Terminal</span>
-        <span className="text-[11px] text-fg-muted">nexus-run</span>
+      <div className="flex items-center gap-2 border-b border-border/5 px-3 py-1.5">
+        <span className="text-2xs font-semibold uppercase tracking-wide text-fg">Terminal</span>
+        <span className="text-2xs text-fg-muted">nexus-run</span>
         <div className="ml-auto flex items-center gap-1">
-          <button type="button" onClick={onClear} aria-label="Clear terminal" className="rounded p-1 text-fg-muted hover:bg-white/10 hover:text-fg">
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-          <button type="button" onClick={onClose} aria-label="Close panel" className="rounded p-1 text-fg-muted hover:bg-white/10 hover:text-fg">
-            <ChevronDown className="h-4 w-4" />
-          </button>
+          <IconButton icon={Trash2} label="Clear terminal" onClick={onClear} />
+          <IconButton icon={ChevronDown} label="Close panel" size="md" onClick={onClose} />
         </div>
       </div>
 
@@ -64,7 +61,7 @@ export function RunPanel({ command, running, result, onClear, onClose }: Props) 
                   {line.text || ' '}
                 </div>
               ))}
-              <div className="mt-2 flex items-center gap-2 text-[11px]">
+              <div className="mt-2 flex items-center gap-2 text-2xs">
                 {result.exitCode === 0 ? (
                   <CheckCircle2 className="h-3.5 w-3.5 text-success" />
                 ) : (

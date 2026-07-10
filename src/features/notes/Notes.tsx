@@ -59,9 +59,9 @@ export default function Notes() {
 
   return (
     <div className="flex h-full">
-      <aside className="flex w-60 shrink-0 flex-col border-r border-white/5">
+      <aside className="flex w-60 shrink-0 flex-col border-r border-border/5">
         <div className="flex items-center gap-2 p-2.5">
-          <div className="flex flex-1 items-center gap-2 rounded-lg bg-white/5 px-2.5">
+          <div className="flex flex-1 items-center gap-2 rounded-lg bg-fg/5 px-2.5">
             <Search className="h-3.5 w-3.5 text-fg-muted" />
             <input
               value={query}
@@ -92,13 +92,13 @@ export default function Notes() {
               onClick={() => setActiveId(note.id)}
               className={cn(
                 'group mb-1 flex w-full items-start gap-2 rounded-lg p-2 text-left transition-colors',
-                note.id === activeId ? 'bg-accent/20' : 'hover:bg-white/5',
+                note.id === activeId ? 'bg-accent/20' : 'hover:bg-fg/5',
               )}
             >
               <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fg-muted" />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-xs font-medium text-fg">{note.title || 'Untitled'}</span>
-                <span className="block truncate text-[11px] text-fg-muted">
+                <span className="block truncate text-2xs text-fg-muted">
                   {note.body.slice(0, 40) || 'No content'}
                 </span>
               </span>
@@ -125,7 +125,7 @@ export default function Notes() {
               onChange={(e) => setDraft((d) => ({ ...d!, title: e.target.value }))}
               placeholder="Title"
               aria-label="Note title"
-              className="border-b border-white/5 bg-transparent px-5 py-3.5 text-lg font-semibold text-fg outline-none placeholder:text-fg-muted"
+              className="border-b border-border/5 bg-transparent px-5 py-3.5 text-lg font-semibold text-fg outline-none placeholder:text-fg-muted"
             />
             <textarea
               value={draft.body}

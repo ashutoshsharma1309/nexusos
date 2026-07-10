@@ -70,7 +70,7 @@ function WindowImpl({ win }: { win: WindowInstance }) {
         className={cn(
           'glass flex flex-col overflow-hidden',
           maximized ? 'rounded-none' : 'rounded-window',
-          win.focused ? 'ring-1 ring-white/[0.12]' : 'ring-1 ring-black/20',
+          win.focused ? 'ring-1 ring-fg/[0.12]' : 'ring-1 ring-black/20',
           !win.focused && !minimized && 'saturate-[0.92]',
         )}
       >

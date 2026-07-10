@@ -63,7 +63,7 @@ export default function TicTacToe() {
   return (
     <div className="flex h-full flex-col items-center gap-4 p-5">
       <div className="flex w-full items-center justify-between">
-        <div className="inline-flex rounded-lg bg-white/5 p-0.5 text-[11px]">
+        <div className="inline-flex rounded-lg bg-fg/5 p-0.5 text-2xs">
           {(['casual', 'unbeatable'] as const).map((d) => (
             <button
               key={d}
@@ -75,7 +75,7 @@ export default function TicTacToe() {
             </button>
           ))}
         </div>
-        <button type="button" onClick={reset} aria-label="New game" className="flex items-center gap-1.5 rounded-lg bg-white/5 px-2.5 py-1 text-[11px] text-fg-muted transition-colors hover:text-fg">
+        <button type="button" onClick={reset} aria-label="New game" className="flex items-center gap-1.5 rounded-lg bg-fg/5 px-2.5 py-1 text-2xs text-fg-muted transition-colors hover:text-fg">
           <RotateCcw className="h-3 w-3" /> New game
         </button>
       </div>
@@ -94,7 +94,7 @@ export default function TicTacToe() {
               aria-label={`Cell ${i + 1}${cell ? `, ${cell}` : ', empty'}`}
               className={cn(
                 'grid h-20 w-20 place-items-center rounded-2xl border transition-colors',
-                winning ? 'border-success bg-success/15' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.07]',
+                winning ? 'border-success bg-success/15' : 'border-border/10 bg-fg/[0.03] hover:bg-fg/[0.07]',
                 !cell && !over && turn === 'X' && 'cursor-pointer',
               )}
             >
@@ -119,9 +119,9 @@ export default function TicTacToe() {
           { label: 'Draws', value: score.draw, tone: 'text-fg-muted' },
           { label: 'Nexus (O)', value: score.O, tone: 'text-danger' },
         ].map((s) => (
-          <div key={s.label} className="rounded-xl bg-white/5 p-2.5">
+          <div key={s.label} className="rounded-xl bg-fg/5 p-2.5">
             <p className={cn('text-xl font-bold tabular-nums', s.tone)}>{s.value}</p>
-            <p className="text-[11px] text-fg-muted">{s.label}</p>
+            <p className="text-2xs text-fg-muted">{s.label}</p>
           </div>
         ))}
       </div>

@@ -9,6 +9,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { spring } from '@/lib/motion';
+import { Badge } from '@/components/ui/Badge';
 
 interface Props {
   icon: LucideIcon;
@@ -74,7 +75,7 @@ export function DockIcon({
       className="group relative grid shrink-0 place-items-center"
     >
       <span
-        className="grid h-full w-full place-items-center rounded-[30%] border border-white/15 shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.25)]"
+        className="grid h-full w-full place-items-center rounded-[30%] border border-border/15 shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.25)]"
         style={{ background: `linear-gradient(155deg, rgb(${tint} / 0.95), rgb(${tint} / 0.5))` }}
       >
         <Icon className="h-[46%] w-[46%] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" />
@@ -82,12 +83,12 @@ export function DockIcon({
 
       {badge ? (
         <motion.span
+          className="absolute -right-1 -top-1"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={spring.bouncy}
-          className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-danger px-1 text-[9px] font-bold text-white shadow ring-2 ring-black/30"
         >
-          {badge > 9 ? '9+' : badge}
+          <Badge count={badge} ring />
         </motion.span>
       ) : null}
 

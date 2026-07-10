@@ -69,8 +69,8 @@ export default function Calculator() {
               key.variant === 'op'
                 ? 'bg-accent text-accent-fg hover:brightness-110'
                 : key.variant === 'fn'
-                  ? 'bg-white/10 text-fg hover:bg-white/15'
-                  : 'bg-white/[0.06] text-fg hover:bg-white/[0.1]',
+                  ? 'bg-fg/10 text-fg hover:bg-fg/15'
+                  : 'bg-fg/[0.06] text-fg hover:bg-fg/[0.1]',
             )}
           >
             {key.label}
