@@ -16,8 +16,7 @@ export const viewport: Viewport = {
   themeColor: '#0a0b10',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // Pinch-zoom must remain available (WCAG 1.4.4). Do not lock the scale.
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

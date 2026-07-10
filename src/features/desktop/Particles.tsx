@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface Particle {
   id: number;
@@ -15,6 +15,7 @@ interface Particle {
 /** Slow ambient motes drifting upward. Purely decorative and GPU-composited;
  *  hidden entirely when the user prefers reduced motion (see globals.css). */
 export function Particles({ count = 18 }: { count?: number }) {
+  const reducedMotion = useReducedMotion();
   const particles = useMemo<Particle[]>(
     () =>
       Array.from({ length: count }, (_, id) => ({
@@ -27,6 +28,9 @@ export function Particles({ count = 18 }: { count?: number }) {
       })),
     [count],
   );
+
+  // Purely decorative — never run under reduced motion.
+  if (reducedMotion) return null;
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">

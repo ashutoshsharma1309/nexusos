@@ -40,6 +40,12 @@ export function ContextMenu({ state, onClose }: Props) {
     });
   }, [state]);
 
+  // Move focus into the menu on open, so it is immediately keyboard-operable.
+  useEffect(() => {
+    if (!state) return;
+    ref.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+  }, [state]);
+
   useEffect(() => {
     if (!state) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -47,14 +53,31 @@ export function ContextMenu({ state, onClose }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, [state, onClose]);
 
+  /** Roving focus with the arrow keys, wrapping at the ends (menu semantics). */
+  const onMenuKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const items = Array.from(ref.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? []);
+    if (items.length === 0) return;
+    const current = items.indexOf(document.activeElement as HTMLButtonElement);
+    const next =
+      e.key === 'Home' ? 0
+      : e.key === 'End' ? items.length - 1
+      : e.key === 'ArrowDown' ? (current + 1) % items.length
+      : (current - 1 + items.length) % items.length;
+    items[next]?.focus();
+  };
+
   return (
     <AnimatePresence>
       {state && (
         <>
-          <div className="fixed inset-0 z-overlay" onPointerDown={onClose} onContextMenu={(e) => { e.preventDefault(); onClose(); }} />
+          <div className="fixed inset-0 z-overlay" aria-hidden onPointerDown={onClose} onContextMenu={(e) => { e.preventDefault(); onClose(); }} />
           <motion.div
             ref={ref}
             role="menu"
+            aria-orientation="vertical"
+            onKeyDown={onMenuKeyDown}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
 import { Particles } from './Particles';
 
@@ -10,19 +10,25 @@ import { Particles } from './Particles';
  * fine grain overlay, and floating particles. All layers are GPU-composited.
  */
 export function Wallpaper() {
+  const reducedMotion = useReducedMotion();
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const px = useSpring(mx, { stiffness: 40, damping: 20 });
   const py = useSpring(my, { stiffness: 40, damping: 20 });
 
   useEffect(() => {
+    if (reducedMotion) return;
     const onMove = (e: PointerEvent) => {
       mx.set((e.clientX / window.innerWidth - 0.5) * 2);
       my.set((e.clientY / window.innerHeight - 0.5) * 2);
     };
     window.addEventListener('pointermove', onMove, { passive: true });
     return () => window.removeEventListener('pointermove', onMove);
-  }, [mx, my]);
+  }, [mx, my, reducedMotion]);
+
+  // A single flag switches the wallpaper from "alive" to a calm static gradient.
+  const pulse = (peak: number) =>
+    reducedMotion ? undefined : { scale: [1, peak, 1] as number[] };
 
   const blobAX = useTransform(px, (v) => v * 40);
   const blobAY = useTransform(py, (v) => v * 40);
@@ -37,7 +43,7 @@ export function Wallpaper() {
       >
         <motion.div
           className="h-full w-full rounded-full"
-          animate={{ scale: [1, 1.12, 1] }}
+          animate={pulse(1.12)}
           transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.div>
@@ -47,7 +53,7 @@ export function Wallpaper() {
       >
         <motion.div
           className="h-full w-full rounded-full"
-          animate={{ scale: [1, 1.18, 1] }}
+          animate={pulse(1.18)}
           transition={{ duration: 32, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.div>

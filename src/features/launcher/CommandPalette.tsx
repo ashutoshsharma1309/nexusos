@@ -6,6 +6,7 @@ import Fuse from 'fuse.js';
 import { spring } from '@/lib/motion';
 import { Search, CornerDownLeft } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useLauncherStore } from './store';
 import { buildCommands, type Command } from './commands';
 
@@ -16,6 +17,7 @@ export function CommandPalette() {
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
 
   const commands = useMemo(() => (isOpen ? buildCommands() : []), [isOpen]);
   const fuse = useMemo(
@@ -80,7 +82,9 @@ export function CommandPalette() {
         >
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" aria-hidden />
           <motion.div
+            ref={trapRef}
             role="dialog"
+            aria-modal="true"
             aria-label="Command palette"
             initial={{ opacity: 0, scale: 0.97, y: -8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}

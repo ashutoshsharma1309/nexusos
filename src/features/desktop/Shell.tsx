@@ -16,6 +16,12 @@ export function Shell() {
 
   return (
     <div className="relative h-dvh w-screen overflow-hidden">
+      <a
+        href="#main-content"
+        className="sr-only rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-fg focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-boot"
+      >
+        Skip to content
+      </a>
       <Desktop />
       <MenuBar />
       <Dock />

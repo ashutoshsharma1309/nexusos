@@ -83,6 +83,8 @@ export function Desktop() {
 
   return (
     <main
+      id="main-content"
+      aria-label="Desktop"
       className="relative h-full w-full overflow-hidden"
       onPointerDown={onPointerDown}
       onContextMenu={onContextMenu}

@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BellOff, Trash2, X } from 'lucide-react';
 import { spring } from '@/lib/motion';
 import { cn } from '@/lib/cn';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { IconButton } from '@/components/ui/IconButton';
 import { useNotificationStore } from './store';
 import { TONE_COLOR, TONE_ICON } from './toneStyles';
 
@@ -21,6 +24,14 @@ export function NotificationCenter() {
   const items = useNotificationStore((s) => s.items);
   const remove = useNotificationStore((s) => s.remove);
   const clearAll = useNotificationStore((s) => s.clearAll);
+  const trapRef = useFocusTrap<HTMLElement>(open);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, close]);
 
   return (
     <AnimatePresence>
@@ -34,6 +45,9 @@ export function NotificationCenter() {
             onPointerDown={close}
           />
           <motion.aside
+            ref={trapRef}
+            role="dialog"
+            aria-modal="true"
             aria-label="Notification center"
             initial={{ x: 360, opacity: 0.4 }}
             animate={{ x: 0, opacity: 1 }}
@@ -44,23 +58,13 @@ export function NotificationCenter() {
             <div className="flex items-center justify-between border-b border-border/10 px-4 py-3">
               <h2 className="text-sm font-semibold text-fg">Notifications</h2>
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
+                <IconButton
+                  icon={Trash2}
+                  label="Clear all notifications"
                   onClick={clearAll}
                   disabled={items.length === 0}
-                  aria-label="Clear all notifications"
-                  className="rounded p-1 text-fg-muted transition-colors hover:text-fg disabled:opacity-40"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={close}
-                  aria-label="Close notification center"
-                  className="rounded p-1 text-fg-muted transition-colors hover:text-fg"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+                />
+                <IconButton icon={X} label="Close notification center" size="md" onClick={close} />
               </div>
             </div>
 
@@ -90,7 +94,7 @@ export function NotificationCenter() {
                         type="button"
                         aria-label="Remove notification"
                         onClick={() => remove(item.id)}
-                        className="rounded p-0.5 text-fg-muted opacity-0 transition-opacity hover:text-fg group-hover:opacity-100"
+                        className="rounded p-0.5 text-fg-muted opacity-0 transition-opacity hover:text-fg focus-visible:opacity-100 group-hover:opacity-100"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
