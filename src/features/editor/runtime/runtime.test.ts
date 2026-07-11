@@ -71,6 +71,30 @@ describe('c/c++ compile diagnostics', () => {
     expect(r.lines.some((l) => l.stream === 'stdout')).toBe(false);
   });
 
+  it('rejects a missing semicolon before the next statement', () => {
+    const r = runFile('main.c', 'int main(void){\n  printf("hi\\n")\n  return 0;\n}');
+    expect(r.exitCode).toBe(1);
+    expect(r.lines[0]?.text).toContain("expected ';' before 'return'");
+    expect(r.lines.some((l) => l.stream === 'stdout')).toBe(false);
+  });
+
+  it('rejects a missing semicolon before a closing brace', () => {
+    const r = runFile('main.c', 'int main(){ printf("x") }');
+    expect(r.exitCode).toBe(1);
+    expect(r.lines[0]?.text).toContain("expected ';' before '}'");
+  });
+
+  it('does not flag valid control flow, declarations or initializers', () => {
+    const ok = [
+      'int main(){ if (x) a(); else b(); }',
+      'int main(){ for (int i=0;i<3;i++) printf("%d", i); }',
+      'int main(){ unsigned int x = 5; long long y = 10; return 0; }',
+      'int main(){ int a[] = {1, 2, 3}; return a[0]; }',
+      'struct P { int x; int y; };\nint main(){ return 0; }',
+    ];
+    for (const src of ok) expect(validateClike(src)).toHaveLength(0);
+  });
+
   it('reports an unbalanced brace', () => {
     const r = runFile('main.c', 'int main(){ printf("x");');
     expect(r.exitCode).toBe(1);
