@@ -57,7 +57,9 @@ export const LANGUAGES: Record<string, Language> = {
 };
 
 export function extensionOf(name: string): string {
-  return name.split('.').pop()?.toLowerCase() ?? '';
+  const dot = name.lastIndexOf('.');
+  // A leading dot (dotfile) or no dot at all means there is no extension.
+  return dot > 0 ? name.slice(dot + 1).toLowerCase() : '';
 }
 
 export function languageFor(name: string): Language {

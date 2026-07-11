@@ -24,7 +24,12 @@ export type Action =
   | { type: 'percent' }
   | { type: 'backspace' };
 
-const initial: State = { display: '0', accumulator: null, operator: null, overwrite: false };
+export const initialState: State = {
+  display: '0',
+  accumulator: null,
+  operator: null,
+  overwrite: false,
+};
 
 const apply = (a: number, b: number, op: Op): number => {
   switch (op) {
@@ -42,10 +47,10 @@ const fmt = (n: number): string => {
   return String(rounded);
 };
 
-function reducer(state: State, action: Action): State {
+export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'digit': {
-      if (state.display === 'Error') return { ...initial, display: action.value };
+      if (state.display === 'Error') return { ...initialState, display: action.value };
       if (state.overwrite) return { ...state, display: action.value, overwrite: false };
       if (state.display === '0') return { ...state, display: action.value };
       if (state.display.replace('-', '').length >= 12) return state;
@@ -62,7 +67,7 @@ function reducer(state: State, action: Action): State {
       if (state.overwrite || state.display === 'Error') return state;
       return { ...state, display: state.display.length > 1 ? state.display.slice(0, -1) : '0' };
     case 'clear':
-      return initial;
+      return initialState;
     case 'op': {
       const current = parseFloat(state.display);
       if (state.accumulator !== null && state.operator && !state.overwrite) {
@@ -80,7 +85,7 @@ function reducer(state: State, action: Action): State {
 }
 
 export function useCalculator() {
-  const [state, dispatch] = useReducer(reducer, initial);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const expr =
     state.operator && state.accumulator !== null ? `${fmt(state.accumulator)} ${state.operator}` : '';
   const onKey = useCallback((key: string) => {
