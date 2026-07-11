@@ -10,6 +10,7 @@ import { NotificationCenter } from '@/features/notifications/NotificationCenter'
 import { ShortcutsOverlay } from '@/components/ShortcutsOverlay';
 import { Desktop } from './Desktop';
 import { MenuBar } from './MenuBar';
+import { Credit } from './Credit';
 import { BrightnessOverlay } from './BrightnessOverlay';
 
 /** Top-level desktop composition: chrome, windows and overlays. */
@@ -27,6 +28,7 @@ export function Shell() {
       </a>
       <Desktop />
       <MenuBar />
+      <Credit />
       <Dock />
       <Launchpad />
       <CommandPalette />
