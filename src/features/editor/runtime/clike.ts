@@ -1,5 +1,5 @@
 import { evaluate, str, type Builtins, type Scope, type Value } from './expr';
-import { STEP_LIMIT, type RunLine, type Stream } from './types';
+import { NeedInput, STEP_LIMIT, type RunLine, type Stream } from './types';
 
 /**
  * A focused interpreter for the imperative core of C and C++: variable
@@ -264,15 +264,22 @@ function formatSpec(flags: string, width: string | undefined, prec: string | und
   return ' '.repeat(fill) + s;
 }
 
-export function runClike(code: string, stdin = ''): { lines: RunLine[]; exitCode: number } {
+export function runClike(code: string, stdin = ''): { lines: RunLine[]; exitCode: number; waitingForInput?: boolean } {
   const out: RunLine[] = [];
   const steps = { n: 0 };
   let buffer = '';
   let bufferStream: Stream = 'stdout';
 
-  // Real stdin, consumed token-by-token by scanf.
-  const inputTokens = stdin.split(/\s+/).filter((t) => t.length > 0);
-  let inputPos = 0;
+  // Real stdin consumed by scanf/cin. Reading past the end throws NeedInput so
+  // the caller can prompt the user and resume.
+  let cursor = 0;
+  const readToken = (): string => {
+    while (cursor < stdin.length && /\s/.test(stdin[cursor]!)) cursor++;
+    if (cursor >= stdin.length) throw new NeedInput();
+    let token = '';
+    while (cursor < stdin.length && !/\s/.test(stdin[cursor]!)) token += stdin[cursor++];
+    return token;
+  };
 
   const { functions, globals, main } = parseProgram(stripComments(code));
   const B: Builtins = { ...MATH_BUILTINS };
@@ -320,8 +327,8 @@ export function runClike(code: string, stdin = ''): { lines: RunLine[]; exitCode
       const target = targets[idx];
       if (target === undefined) return;
       const name = target.replace(/^\s*&\s*/, '').trim();
+      const token = readToken();
       if (name.includes('[')) return; // array elements unsupported
-      const token = inputTokens[inputPos++] ?? '';
       let value: Value;
       if (/[dioux]/.test(spec)) value = parseInt(token, 10) || 0;
       else if (/[fge]/.test(spec)) value = parseFloat(token) || 0;
@@ -335,7 +342,9 @@ export function runClike(code: string, stdin = ''): { lines: RunLine[]; exitCode
     for (const piece of splitTop(rest, '>>')) {
       const name = piece.trim();
       if (!name) continue;
-      scope.set(name, Number(inputTokens[inputPos++] ?? 0) || (inputTokens[inputPos - 1] ?? ''));
+      const token = readToken();
+      const asNumber = Number(token);
+      scope.set(name, token !== '' && !Number.isNaN(asNumber) ? asNumber : token);
     }
   }
 
@@ -453,6 +462,7 @@ export function runClike(code: string, stdin = ''): { lines: RunLine[]; exitCode
     if (buffer) out.push({ stream: bufferStream, text: buffer });
   } catch (e) {
     if (buffer) out.push({ stream: bufferStream, text: buffer });
+    if (e instanceof NeedInput) return { lines: out, exitCode: 0, waitingForInput: true };
     if (!(e instanceof ReturnSignal)) {
       out.push({ stream: 'stderr', text: e instanceof Error ? e.message : String(e) });
       return { lines: out, exitCode: 1 };

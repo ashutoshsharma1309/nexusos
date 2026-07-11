@@ -1,5 +1,5 @@
 import { evaluate, str, type Builtins, type Scope, type Value } from './expr';
-import { STEP_LIMIT, type RunLine } from './types';
+import { NeedInput, STEP_LIMIT, type RunLine } from './types';
 
 /** Control-flow signals thrown through the block executor. */
 class Return {
@@ -88,7 +88,7 @@ function blockRange(lines: Line[], header: number, end: number): [number, number
 
 const ASSIGN = /^([A-Za-z_]\w*)\s*((?:\/\/|\*\*|[+\-*/%])?)=(?!=)\s*(.+)$/;
 
-export function runPython(code: string, stdin = ''): { lines: RunLine[]; exitCode: number } {
+export function runPython(code: string, stdin = ''): { lines: RunLine[]; exitCode: number; waitingForInput?: boolean } {
   const lines: Line[] = [];
   for (const raw of code.replace(/\r/g, '').replace(/\t/g, '    ').split('\n')) {
     const noComment = stripComment(raw);
@@ -97,9 +97,16 @@ export function runPython(code: string, stdin = ''): { lines: RunLine[]; exitCod
   }
 
   const out: RunLine[] = [];
-  const inputLines = stdin.split('\n');
-  let linePos = 0;
-  const builtins = makeBuiltins(out, () => inputLines[linePos++] ?? '');
+  // input() reads a line from stdin; reading past the end pauses for the user.
+  let cursor = 0;
+  const builtins = makeBuiltins(out, () => {
+    if (cursor >= stdin.length) throw new NeedInput();
+    let nl = stdin.indexOf('\n', cursor);
+    if (nl === -1) nl = stdin.length;
+    const line = stdin.slice(cursor, nl);
+    cursor = nl + 1;
+    return line;
+  });
   const steps = { n: 0 };
   const tick = () => {
     if (++steps.n > STEP_LIMIT) throw new Error('RuntimeError: step limit exceeded (possible infinite loop)');
@@ -219,6 +226,7 @@ export function runPython(code: string, stdin = ''): { lines: RunLine[]; exitCod
   try {
     exec(0, lines.length, new Map());
   } catch (e) {
+    if (e instanceof NeedInput) return { lines: out, exitCode: 0, waitingForInput: true };
     out.push({ stream: 'stderr', text: e instanceof Error ? e.message : String(e) });
     return { lines: out, exitCode: 1 };
   }

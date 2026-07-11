@@ -83,6 +83,29 @@ describe('python stdin', () => {
   });
 });
 
+describe('interactive stdin (pause & resume)', () => {
+  it('pauses when a program reads past the end of stdin', () => {
+    const r = runFile('a.c', 'int main(){ int n; printf("go: "); scanf("%d",&n); printf("%d\\n", n); }', '');
+    expect(r.waitingForInput).toBe(true);
+    expect(r.lines.map((l) => l.text)).toEqual(['go: ']); // prompt shown, no result yet
+  });
+
+  it('completes once enough input is supplied', () => {
+    const code = 'int main(){ int n; printf("go: "); scanf("%d",&n); printf("%d\\n", n); }';
+    const r = runFile('a.c', code, '7\n');
+    expect(r.waitingForInput).toBeFalsy();
+    expect(r.exitCode).toBe(0);
+    // The prompt has no newline, so the value prints on the same line: "go: 7".
+    expect(r.lines.some((l) => l.text.includes('7'))).toBe(true);
+  });
+
+  it('pauses again on a second prompt (multi-input programs)', () => {
+    const py = 'a = input()\nb = input()\nprint(a, b)';
+    expect(runFile('a.py', py, 'x\n').waitingForInput).toBe(true);
+    expect(out2('a.py', py, 'x\ny\n').stdout).toEqual(['x y']);
+  });
+});
+
 describe('c++ runtime', () => {
   it('streams cout with endl and expressions', () => {
     const code = 'using namespace std;\nint main(){ int a=7,b=2; cout << "a+b=" << a+b << endl; }';

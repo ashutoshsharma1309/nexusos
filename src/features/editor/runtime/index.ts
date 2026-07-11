@@ -23,7 +23,7 @@ function formatDiagnostics(name: string, code: string, diagnostics: Diagnostic[]
 }
 
 /** Compile + run C/C++: reject syntax errors before executing, like a real toolchain. */
-function compileAndRun(name: string, code: string, stdin: string): { lines: RunLine[]; exitCode: number } {
+function compileAndRun(name: string, code: string, stdin: string): { lines: RunLine[]; exitCode: number; waitingForInput?: boolean } {
   const diagnostics = validateClike(code);
   if (diagnostics.length > 0) {
     return { lines: formatDiagnostics(name, code, diagnostics), exitCode: 1 };
@@ -41,7 +41,7 @@ export function runFile(name: string, code: string, stdin = ''): RunResult {
   const ext = extensionOf(name);
   const started = performance.now();
 
-  let result: { lines: RunResult['lines']; exitCode: number };
+  let result: { lines: RunResult['lines']; exitCode: number; waitingForInput?: boolean };
   switch (ext) {
     case 'js':
     case 'mjs':

@@ -32,22 +32,17 @@ export default function Editor({ window: win }: AppComponentProps) {
   const initialFileId = typeof win.meta?.fileId === 'string' ? win.meta.fileId : null;
   const [activeFileId, setActiveFileId] = useState<string | null>(initialFileId);
   const [value, setValue] = useState<string | null>(null);
-  const [stdin, setStdin] = useState('');
   const [dirty, setDirty] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<RunResult | null>(null);
+  // Accumulated stdin across interactive prompts; the program re-runs with more.
+  const stdinRef = useRef('');
   const gutterRef = useRef<HTMLDivElement>(null);
 
   const file = useLiveQuery(() => (activeFileId ? db.fs.get(activeFileId) : undefined), [activeFileId]);
   const lang = languageFor(file?.name ?? '');
-
-  // Programs that read input get a stdin box, fed to scanf/cin/input().
-  const needsInput = useMemo(
-    () => /\b(scanf|gets|fgets|getchar|cin|std::cin|input\s*\()/.test(value ?? ''),
-    [value],
-  );
 
   // Load the buffer whenever the active file changes identity.
   useEffect(() => {
@@ -69,16 +64,37 @@ export default function Editor({ window: win }: AppComponentProps) {
 
   const lineCount = useMemo(() => (value ?? '').split('\n').length, [value]);
 
+  // Execute against the current accumulated stdin. A program that reads past the
+  // end pauses (result.waitingForInput); submitInput appends a line and re-runs.
+  const execute = useCallback(
+    (stdin: string, spin: boolean) => {
+      if (!file || value === null) return;
+      if (spin) {
+        setRunning(true);
+        setResult(null);
+      }
+      window.setTimeout(() => {
+        setResult(runFile(file.name, value, stdin));
+        setRunning(false);
+      }, spin ? 120 : 0);
+    },
+    [file, value],
+  );
+
   const run = useCallback(() => {
-    if (!file || value === null || !lang.runnable) return;
+    if (!lang.runnable) return;
+    stdinRef.current = '';
     setPanelOpen(true);
-    setRunning(true);
-    setResult(null);
-    window.setTimeout(() => {
-      setResult(runFile(file.name, value, stdin));
-      setRunning(false);
-    }, 120);
-  }, [file, value, stdin, lang.runnable]);
+    execute('', true);
+  }, [lang.runnable, execute]);
+
+  const submitInput = useCallback(
+    (line: string) => {
+      stdinRef.current += line + '\n';
+      execute(stdinRef.current, false);
+    },
+    [execute],
+  );
 
   const openFile = (id: string) => {
     setPanelOpen(false);
@@ -183,23 +199,6 @@ export default function Editor({ window: win }: AppComponentProps) {
         />
       </div>
 
-      {needsInput && (
-        <div className="flex shrink-0 items-start gap-2 border-t border-border/5 bg-black/20 px-3 py-2">
-          <span className="mt-1.5 shrink-0 text-2xs font-semibold uppercase tracking-wide text-fg-muted">
-            stdin
-          </span>
-          <textarea
-            value={stdin}
-            onChange={(e) => setStdin(e.target.value)}
-            rows={1}
-            spellCheck={false}
-            placeholder="Program input — one value per line or space-separated"
-            aria-label="Standard input"
-            className="min-h-[30px] flex-1 resize-y rounded bg-fg/5 px-2 py-1 text-xs text-fg outline-none placeholder:text-fg-muted"
-          />
-        </div>
-      )}
-
       <AnimatePresence>
         {panelOpen && (
           <RunPanel
@@ -208,6 +207,7 @@ export default function Editor({ window: win }: AppComponentProps) {
             result={result}
             onClear={() => setResult(null)}
             onClose={() => setPanelOpen(false)}
+            onSubmitInput={submitInput}
           />
         )}
       </AnimatePresence>
