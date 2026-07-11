@@ -8,6 +8,12 @@ const out = (name: string, code: string) => {
   return { r, stdout: r.lines.filter((l) => l.stream === 'stdout').map((l) => l.text) };
 };
 
+/** As `out`, but feeding stdin. */
+const out2 = (name: string, code: string, stdin: string) => {
+  const r = runFile(name, code, stdin);
+  return { r, stdout: r.lines.filter((l) => l.stream === 'stdout').map((l) => l.text) };
+};
+
 describe('python runtime', () => {
   it('prints, assigns and does arithmetic', () => {
     const { r, stdout } = out('a.py', 'x = 5\ny = 3\nprint("sum:", x + y)');
@@ -40,6 +46,40 @@ describe('c runtime', () => {
   it('runs classic for loops', () => {
     const code = 'int main(){ for(int i=0;i<3;i++){ printf("row %d\\n", i); } }';
     expect(out('a.c', code).stdout).toEqual(['row 0', 'row 1', 'row 2']);
+  });
+});
+
+describe('c runtime — functions, stdin, formatting', () => {
+  it('calls user-defined functions and recurses', () => {
+    const code = 'int fact(int n){ if(n<=1) return 1; return n*fact(n-1); } int main(){ printf("%d\\n", fact(5)); }';
+    expect(out('a.c', code).stdout).toEqual(['120']);
+  });
+
+  it('reads stdin with scanf', () => {
+    const code = 'int main(){ int n; scanf("%d", &n); printf("got %d\\n", n*2); }';
+    expect(out2('a.c', code, '21').stdout).toEqual(['got 42']);
+  });
+
+  it('uses C integer division and float division correctly', () => {
+    expect(out('a.c', 'int main(){ int a=5; printf("%d %.2f\\n", a/2, a/2.0); }').stdout).toEqual(['2 2.50']);
+  });
+
+  it('honors printf width and zero-padding', () => {
+    expect(out('a.c', 'int main(){ printf("%02d:%3d\\n", 5, 7); }').stdout).toEqual(['05:  7']);
+  });
+
+  it('runs the binary-watch program end to end', () => {
+    const code = `int bits(int n){ int c=0; while(n){ c+=n%2; n/=2; } return c; }
+      int main(){ int n; scanf("%d",&n);
+        for(int h=0;h<12;h++) for(int m=0;m<60;m++) if(bits(h)+bits(m)==n) printf("%d:%02d\\n",h,m);
+      }`;
+    expect(out2('a.c', code, '1').stdout).toEqual(['0:01', '0:02', '0:04', '0:08', '0:16', '0:32', '1:00', '2:00', '4:00', '8:00']);
+  });
+});
+
+describe('python stdin', () => {
+  it('reads input()', () => {
+    expect(out2('a.py', 'n = int(input())\nprint(n * n)', '6').stdout).toEqual(['36']);
   });
 });
 

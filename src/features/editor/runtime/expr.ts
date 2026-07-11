@@ -78,9 +78,15 @@ const num = (v: Value): number => (typeof v === 'number' ? v : Number(v));
 /** Truthiness for conditional expressions: 0 / '' / false are falsy. */
 const truthy = (v: Value): boolean => v !== 0 && v !== '' && v !== false;
 
-/** Evaluate a single expression string against a variable scope + builtins. */
-export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Value {
+/**
+ * Evaluate a single expression against a variable scope + builtins.
+ * `cIntDiv` selects C semantics for `/` (integer division when both operands are
+ * integers and no float literal appears); Python leaves it false (true division).
+ */
+export function evaluate(src: string, scope: Scope, builtins: Builtins = {}, cIntDiv = false): Value {
   const tokens = tokenize(src);
+  // Integer division only when the whole expression is integer-typed.
+  const intDivMode = cIntDiv && !tokens.some((t) => t.kind === 'num' && t.value.includes('.'));
   let pos = 0;
   const peek = () => tokens[pos];
   const eat = () => tokens[pos++];
@@ -90,7 +96,7 @@ export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Va
     while (peek()?.kind === 'op' && ops.includes(peek()!.value)) {
       const op = eat()!.value;
       const right = next();
-      left = applyOp(op, left, right);
+      left = applyOp(op, left, right, intDivMode);
     }
     return left;
   }
@@ -174,7 +180,7 @@ export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Va
   return result;
 }
 
-function applyOp(op: string, a: Value, b: Value): Value {
+function applyOp(op: string, a: Value, b: Value, intDiv = false): Value {
   switch (op) {
     case '+':
       return typeof a === 'string' || typeof b === 'string' ? `${str(a)}${str(b)}` : num(a) + num(b);
@@ -185,7 +191,10 @@ function applyOp(op: string, a: Value, b: Value): Value {
       if (typeof b === 'string') return b.repeat(Math.max(0, num(a)));
       return num(a) * num(b);
     case '/':
-      return num(a) / num(b);
+      // C integer division truncates toward zero when both operands are ints.
+      return intDiv && Number.isInteger(num(a)) && Number.isInteger(num(b))
+        ? Math.trunc(num(a) / num(b))
+        : num(a) / num(b);
     case '//':
       return Math.floor(num(a) / num(b));
     case '%':

@@ -55,12 +55,16 @@ function splitArgs(src: string): string[] {
   return parts;
 }
 
-function makeBuiltins(out: RunLine[]): Builtins {
+function makeBuiltins(out: RunLine[], readLine: () => string): Builtins {
   const n = (v: Value) => (typeof v === 'number' ? v : Number(v));
   return {
     print: (args) => {
       out.push({ stream: 'stdout', text: args.map(str).join(' ') });
       return 0;
+    },
+    input: (args) => {
+      if (args[0] !== undefined) out.push({ stream: 'stdout', text: str(args[0]) });
+      return readLine();
     },
     len: (a) => (typeof a[0] === 'string' ? a[0].length : 0),
     str: (a) => str(a[0] ?? ''),
@@ -84,7 +88,7 @@ function blockRange(lines: Line[], header: number, end: number): [number, number
 
 const ASSIGN = /^([A-Za-z_]\w*)\s*((?:\/\/|\*\*|[+\-*/%])?)=(?!=)\s*(.+)$/;
 
-export function runPython(code: string): { lines: RunLine[]; exitCode: number } {
+export function runPython(code: string, stdin = ''): { lines: RunLine[]; exitCode: number } {
   const lines: Line[] = [];
   for (const raw of code.replace(/\r/g, '').replace(/\t/g, '    ').split('\n')) {
     const noComment = stripComment(raw);
@@ -93,7 +97,9 @@ export function runPython(code: string): { lines: RunLine[]; exitCode: number } 
   }
 
   const out: RunLine[] = [];
-  const builtins = makeBuiltins(out);
+  const inputLines = stdin.split('\n');
+  let linePos = 0;
+  const builtins = makeBuiltins(out, () => inputLines[linePos++] ?? '');
   const steps = { n: 0 };
   const tick = () => {
     if (++steps.n > STEP_LIMIT) throw new Error('RuntimeError: step limit exceeded (possible infinite loop)');

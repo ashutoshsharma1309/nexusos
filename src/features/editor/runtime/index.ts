@@ -23,20 +23,21 @@ function formatDiagnostics(name: string, code: string, diagnostics: Diagnostic[]
 }
 
 /** Compile + run C/C++: reject syntax errors before executing, like a real toolchain. */
-function compileAndRun(name: string, code: string): { lines: RunLine[]; exitCode: number } {
+function compileAndRun(name: string, code: string, stdin: string): { lines: RunLine[]; exitCode: number } {
   const diagnostics = validateClike(code);
   if (diagnostics.length > 0) {
     return { lines: formatDiagnostics(name, code, diagnostics), exitCode: 1 };
   }
-  return runClike(code);
+  return runClike(code, stdin);
 }
 
 /**
  * Execute a source file with the local runtime that matches its extension.
  * JavaScript/TypeScript run for real in-page; Python/C/C++ run through the
- * bundled interpreters. Wall-clock time is measured so the UI can show it.
+ * bundled interpreters. `stdin` feeds scanf/cin/input(). Wall-clock time is
+ * measured so the UI can show it.
  */
-export function runFile(name: string, code: string): RunResult {
+export function runFile(name: string, code: string, stdin = ''): RunResult {
   const ext = extensionOf(name);
   const started = performance.now();
 
@@ -50,12 +51,12 @@ export function runFile(name: string, code: string): RunResult {
       result = runJs(code, true);
       break;
     case 'py':
-      result = runPython(code);
+      result = runPython(code, stdin);
       break;
     case 'c':
     case 'cpp':
     case 'cc':
-      result = compileAndRun(name, code);
+      result = compileAndRun(name, code, stdin);
       break;
     default:
       result = { lines: [{ stream: 'stderr', text: `Cannot run .${ext} files.` }], exitCode: 1 };
