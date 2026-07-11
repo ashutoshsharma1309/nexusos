@@ -31,7 +31,7 @@ function ThemeSwatch({ id, active, onClick }: { id: ThemeId; active: boolean; on
       style={{ background: 'rgb(var(--color-surface))' }}
     >
       <div className="mb-2 flex gap-1">
-        {['--color-accent', '--color-success', '--color-warning', '--color-danger'].map((v) => (
+        {['--theme-accent', '--color-success', '--color-warning', '--color-danger'].map((v) => (
           <span key={v} className="h-4 w-4 rounded-full" style={{ background: `rgb(var(${v}))` }} />
         ))}
       </div>

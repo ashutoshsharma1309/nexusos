@@ -4,10 +4,13 @@ import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
 import { usePointerAmbient } from '@/hooks/usePointerAmbient';
 import { Dock } from '@/features/dock/Dock';
 import { CommandPalette } from '@/features/launcher/CommandPalette';
+import { Launchpad } from '@/features/launchpad/Launchpad';
 import { Toaster } from '@/features/notifications/Toaster';
 import { NotificationCenter } from '@/features/notifications/NotificationCenter';
+import { ShortcutsOverlay } from '@/components/ShortcutsOverlay';
 import { Desktop } from './Desktop';
 import { MenuBar } from './MenuBar';
+import { BrightnessOverlay } from './BrightnessOverlay';
 
 /** Top-level desktop composition: chrome, windows and overlays. */
 export function Shell() {
@@ -25,9 +28,12 @@ export function Shell() {
       <Desktop />
       <MenuBar />
       <Dock />
+      <Launchpad />
       <CommandPalette />
       <NotificationCenter />
+      <ShortcutsOverlay />
       <Toaster />
+      <BrightnessOverlay />
     </div>
   );
 }

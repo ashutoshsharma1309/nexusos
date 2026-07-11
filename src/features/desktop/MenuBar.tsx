@@ -1,10 +1,11 @@
 'use client';
 
-import { Bell, Command, Search, Sparkles } from 'lucide-react';
+import { Bell, Command, Moon, Search, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { useWindowStore } from '@/features/window-manager/store';
 import { useLauncherStore } from '@/features/launcher/store';
 import { useNotificationStore } from '@/features/notifications/store';
+import { ControlCenter } from '@/features/control-center/ControlCenter';
 import { Clock } from './Clock';
 import { SystemStats } from './SystemStats';
 
@@ -14,6 +15,7 @@ export function MenuBar() {
   const openLauncher = useLauncherStore((s) => s.open);
   const toggleCenter = useNotificationStore((s) => s.togglePanel);
   const unread = useNotificationStore((s) => s.items.filter((i) => !i.read).length);
+  const dnd = useNotificationStore((s) => s.dnd);
 
   const focused = windows.find((w) => w.focused && w.state !== 'minimized');
 
@@ -33,8 +35,14 @@ export function MenuBar() {
       <div className="flex-1" />
 
       <SystemStats />
+      <ControlCenter />
 
       <div className="glass-strong flex h-8 items-center gap-1 rounded-full px-1.5 shadow-popover">
+        {dnd && (
+          <span className="pl-1.5 text-fg-muted" title="Do Not Disturb is on" aria-label="Do Not Disturb is on">
+            <Moon className="h-3.5 w-3.5" />
+          </span>
+        )}
         <button
           type="button"
           onClick={() => openLauncher()}

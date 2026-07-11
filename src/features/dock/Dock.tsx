@@ -8,7 +8,7 @@ import { spring } from '@/lib/motion';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { DOCK_APPS } from '@/features/apps/registry';
 import { useWindowStore } from '@/features/window-manager/store';
-import { useLauncherStore } from '@/features/launcher/store';
+import { useLaunchpadStore } from '@/features/launchpad/store';
 import { useNotificationStore } from '@/features/notifications/store';
 import { DockIcon } from './DockIcon';
 
@@ -18,7 +18,7 @@ export function Dock() {
   const mouseX = useMotionValue(-1);
   const open = useWindowStore((s) => s.open);
   const windows = useWindowStore((s) => s.windows);
-  const openLauncher = useLauncherStore((s) => s.open);
+  const openLaunchpad = useLaunchpadStore((s) => s.open);
   const items = useNotificationStore((s) => s.items);
   const isMobile = useIsMobile();
 
@@ -55,7 +55,7 @@ export function Dock() {
           tint="120 130 160"
           running={false}
           mouseX={mouseX}
-          onClick={openLauncher}
+          onClick={openLaunchpad}
         />
         <span className="mx-0.5 h-11 w-px self-center bg-fg/10" aria-hidden />
         {DOCK_APPS.map((app) => (

@@ -3,10 +3,12 @@
 import { useEffect } from 'react';
 import { useWindowStore } from '@/features/window-manager/store';
 import { useLauncherStore } from '@/features/launcher/store';
+import { useShortcutsStore } from '@/components/ShortcutsOverlay';
 
 /**
  * System-wide keyboard shortcuts:
  *  - ⌘K / Ctrl+K   toggle command palette
+ *  - ⌘/ / Ctrl+/   toggle the shortcuts cheat sheet
  *  - ⌘W / Ctrl+W   close the focused window
  *  - ⌘M / Ctrl+M   minimize the focused window
  *  - Ctrl+`        cycle window focus
@@ -19,6 +21,12 @@ export function useGlobalShortcuts(): void {
       if (mod && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         useLauncherStore.getState().toggle();
+        return;
+      }
+
+      if (mod && e.key === '/') {
+        e.preventDefault();
+        useShortcutsStore.getState().toggle();
         return;
       }
 

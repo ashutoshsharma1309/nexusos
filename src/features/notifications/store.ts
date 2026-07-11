@@ -19,6 +19,8 @@ export interface NotificationItem {
 interface NotificationStore {
   items: NotificationItem[];
   panelOpen: boolean;
+  /** Do Not Disturb: notifications still collect in the center but never toast. */
+  dnd: boolean;
   push: (input: Omit<NotificationItem, 'id' | 'createdAt' | 'read' | 'toast'>) => string;
   dismissToast: (id: string) => void;
   remove: (id: string) => void;
@@ -26,11 +28,13 @@ interface NotificationStore {
   clearAll: () => void;
   togglePanel: () => void;
   closePanel: () => void;
+  setDnd: (value: boolean) => void;
 }
 
-export const useNotificationStore = create<NotificationStore>((set) => ({
+export const useNotificationStore = create<NotificationStore>((set, get) => ({
   items: [],
   panelOpen: false,
+  dnd: false,
 
   push: (input) => {
     const id = nanoid();
@@ -39,7 +43,8 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
       id,
       createdAt: Date.now(),
       read: false,
-      toast: true,
+      // Under Do Not Disturb the item is filed silently, no toast.
+      toast: !get().dnd,
     };
     set((s) => ({ items: [item, ...s.items].slice(0, 50) }));
     return id;
@@ -59,6 +64,7 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
       items: s.panelOpen ? s.items : s.items.map((i) => ({ ...i, read: true })),
     })),
   closePanel: () => set({ panelOpen: false }),
+  setDnd: (dnd) => set({ dnd }),
 }));
 
 /** Convenience helper usable outside React (services, terminal commands…). */

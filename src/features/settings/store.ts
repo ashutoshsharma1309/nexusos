@@ -35,6 +35,10 @@ export interface SettingsState {
   motion: MotionPref;
   contrast: ContrastPref;
   reduceTransparency: boolean;
+  /** Display brightness in [0.35, 1]; dims the whole screen via an overlay. */
+  brightness: number;
+  /** Output volume in [0, 1]; drives the UI feedback blip. */
+  volume: number;
   hydrated: boolean;
 
   hydrate: () => Promise<void>;
@@ -43,6 +47,8 @@ export interface SettingsState {
   setMotion: (motion: MotionPref) => void;
   setContrast: (contrast: ContrastPref) => void;
   setReduceTransparency: (value: boolean) => void;
+  setBrightness: (value: number) => void;
+  setVolume: (value: number) => void;
 }
 
 const PERSIST_KEY = 'settings/appearance';
@@ -53,6 +59,8 @@ interface PersistedShape {
   motion: MotionPref;
   contrast: ContrastPref;
   reduceTransparency: boolean;
+  brightness: number;
+  volume: number;
 }
 
 function persist(state: SettingsState): void {
@@ -62,6 +70,8 @@ function persist(state: SettingsState): void {
     motion: state.motion,
     contrast: state.contrast,
     reduceTransparency: state.reduceTransparency,
+    brightness: state.brightness,
+    volume: state.volume,
   };
   void kv.set(PERSIST_KEY, payload);
 }
@@ -72,6 +82,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   motion: 'full',
   contrast: 'normal',
   reduceTransparency: false,
+  brightness: 1,
+  volume: 0.7,
   hydrated: false,
 
   hydrate: async () => {
@@ -98,6 +110,14 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
   setReduceTransparency: (reduceTransparency) => {
     set({ reduceTransparency });
+    persist(get());
+  },
+  setBrightness: (brightness) => {
+    set({ brightness: Math.min(1, Math.max(0.35, brightness)) });
+    persist(get());
+  },
+  setVolume: (volume) => {
+    set({ volume: Math.min(1, Math.max(0, volume)) });
     persist(get());
   },
 }));
