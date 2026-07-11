@@ -15,7 +15,11 @@ touching the core.
 - ✅ Command palette (Fuse.js fuzzy search · keyboard nav)
 - ✅ Notification center + toasts
 - ✅ Persistence via Dexie/IndexedDB (virtual FS · notes · settings)
-- ✅ Apps: Explorer · Terminal · Notes · Code editor · System Monitor · Settings · About
+- ✅ Apps: Explorer · Terminal · Notes · Code editor · Calculator · Tic-Tac-Toe · System Monitor · Settings · About
+- ✅ Local code execution (real JS/TS · Python/C/C++ interpreters) with a VS Code-style run panel
+- ✅ Accessibility pass (reduced-motion honored in JS, focus trapping, skip link, keyboard menus)
+- ✅ Responsive/touch layer (full-bleed windows + scrollable dock on small screens)
+- ✅ Vitest unit suite (interpreters · game AI · calculator · geometry) + GitHub Actions CI
 
 ## Planned application slices
 

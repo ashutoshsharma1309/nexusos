@@ -7,9 +7,24 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swa
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono', display: 'swap' });
 
 export const metadata: Metadata = {
-  title: 'Nexus OS',
-  description: 'A desktop operating system that runs entirely in your browser.',
+  title: { default: 'Nexus OS', template: '%s · Nexus OS' },
+  description:
+    'A desktop operating system that runs entirely in your browser — window manager, dock, terminal and a code editor that runs Python, C and C++ locally.',
   applicationName: 'Nexus OS',
+  authors: [{ name: 'Ashutosh Sharma' }],
+  keywords: [
+    'browser operating system',
+    'window manager',
+    'desktop environment',
+    'Next.js',
+    'React',
+    'TypeScript',
+  ],
+  openGraph: {
+    title: 'Nexus OS',
+    description: 'A desktop operating system that runs entirely in your browser.',
+    type: 'website',
+  },
 };
 
 export const viewport: Viewport = {
