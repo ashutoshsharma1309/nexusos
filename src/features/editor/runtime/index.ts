@@ -1,10 +1,35 @@
 import { extensionOf } from '../languages';
 import { runClike } from './clike';
+import { validateClike, type Diagnostic } from './clike-validate';
 import { runJs } from './js';
 import { runPython } from './python';
-import type { RunResult } from './types';
+import type { RunLine, RunResult } from './types';
 
 export type { RunResult, RunLine } from './types';
+
+/** Render compiler diagnostics in the familiar clang/gcc style, with a caret. */
+function formatDiagnostics(name: string, code: string, diagnostics: Diagnostic[]): RunLine[] {
+  const sourceLines = code.split('\n');
+  const lines: RunLine[] = [];
+  for (const d of diagnostics) {
+    const source = (sourceLines[d.line - 1] ?? '').replace(/\t/g, ' ');
+    lines.push({ stream: 'stderr', text: `${name}:${d.line}:${d.col}: error: ${d.message}` });
+    lines.push({ stream: 'stderr', text: source });
+    lines.push({ stream: 'stderr', text: `${' '.repeat(Math.max(0, d.col - 1))}^` });
+  }
+  const count = diagnostics.length;
+  lines.push({ stream: 'stderr', text: `${count} error${count === 1 ? '' : 's'} generated.` });
+  return lines;
+}
+
+/** Compile + run C/C++: reject syntax errors before executing, like a real toolchain. */
+function compileAndRun(name: string, code: string): { lines: RunLine[]; exitCode: number } {
+  const diagnostics = validateClike(code);
+  if (diagnostics.length > 0) {
+    return { lines: formatDiagnostics(name, code, diagnostics), exitCode: 1 };
+  }
+  return runClike(code);
+}
 
 /**
  * Execute a source file with the local runtime that matches its extension.
@@ -30,7 +55,7 @@ export function runFile(name: string, code: string): RunResult {
     case 'c':
     case 'cpp':
     case 'cc':
-      result = runClike(code);
+      result = compileAndRun(name, code);
       break;
     default:
       result = { lines: [{ stream: 'stderr', text: `Cannot run .${ext} files.` }], exitCode: 1 };

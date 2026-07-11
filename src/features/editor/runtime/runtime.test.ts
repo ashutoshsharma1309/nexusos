@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { runFile } from './index';
+import { validateClike } from './clike-validate';
 
 /** Collect stdout lines for concise assertions. */
 const out = (name: string, code: string) => {
@@ -58,6 +59,42 @@ describe('javascript runtime', () => {
     const r = runFile('a.js', 'throw new Error("boom")');
     expect(r.exitCode).toBe(1);
     expect(r.lines.some((l) => l.stream === 'stderr' && l.text.includes('boom'))).toBe(true);
+  });
+});
+
+describe('c/c++ compile diagnostics', () => {
+  it('rejects a statement terminated with a colon instead of a semicolon', () => {
+    const r = runFile('main.c', 'int main(void){\n  printf("hi\\n"):\n  return 0;\n}');
+    expect(r.exitCode).toBe(1);
+    expect(r.lines[0]?.text).toContain("expected ';' before ':'");
+    // Nothing should have been printed — a compile error means no run.
+    expect(r.lines.some((l) => l.stream === 'stdout')).toBe(false);
+  });
+
+  it('reports an unbalanced brace', () => {
+    const r = runFile('main.c', 'int main(){ printf("x");');
+    expect(r.exitCode).toBe(1);
+    expect(r.lines.some((l) => l.text.includes("expected '}'"))).toBe(true);
+  });
+
+  it('does not flag valid ternaries, and evaluates them', () => {
+    const r = runFile('main.c', 'int main(){ int a=3,b=5; printf("%d\\n", a>b?a:b); }');
+    expect(r.exitCode).toBe(0);
+    expect(r.lines.find((l) => l.stream === 'stdout')?.text).toBe('5');
+  });
+
+  it('the validator accepts valid syntax it cannot yet interpret (no false positives)', () => {
+    // switch/case, scope resolution, range-for, ternary — all legal C/C++.
+    expect(validateClike('int main(){ switch(x){ case 1: default: break; } }')).toHaveLength(0);
+    expect(validateClike('int main(){ std::cout << x; foo::bar(); }')).toHaveLength(0);
+    expect(validateClike('int main(){ for (int x : items) {} }')).toHaveLength(0);
+    expect(validateClike('int main(){ int m = a ? b : c; }')).toHaveLength(0);
+    expect(validateClike('loop: goto loop;')).toHaveLength(0);
+  });
+
+  it('the validator flags a stray colon and unterminated string', () => {
+    expect(validateClike('int main(){ printf("x"): }').length).toBeGreaterThan(0);
+    expect(validateClike('int main(){ char* s = "oops; }').length).toBeGreaterThan(0);
   });
 });
 

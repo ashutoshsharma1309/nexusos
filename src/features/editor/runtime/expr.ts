@@ -63,7 +63,7 @@ function tokenize(src: string): Token[] {
       i += op.length;
       continue;
     }
-    if ('(),'.includes(ch)) {
+    if ('(),?:'.includes(ch)) {
       tokens.push({ kind: 'punc', value: ch });
       i++;
       continue;
@@ -74,6 +74,9 @@ function tokenize(src: string): Token[] {
 }
 
 const num = (v: Value): number => (typeof v === 'number' ? v : Number(v));
+
+/** Truthiness for conditional expressions: 0 / '' / false are falsy. */
+const truthy = (v: Value): boolean => v !== 0 && v !== '' && v !== false;
 
 /** Evaluate a single expression string against a variable scope + builtins. */
 export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Value {
@@ -90,6 +93,20 @@ export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Va
       left = applyOp(op, left, right);
     }
     return left;
+  }
+
+  // Ternary sits at the top of the precedence chain and is right-associative.
+  function conditional(): Value {
+    const cond = or();
+    if (peek()?.value === '?') {
+      eat();
+      const whenTrue = conditional();
+      if (peek()?.value !== ':') throw new Error("Expected ':' in conditional expression");
+      eat();
+      const whenFalse = conditional();
+      return truthy(cond) ? whenTrue : whenFalse;
+    }
+    return cond;
   }
 
   const or = (): Value => binary(and, ['||']);
@@ -126,7 +143,7 @@ export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Va
     if (t.kind === 'num') return Number(t.value);
     if (t.kind === 'str') return t.value;
     if (t.kind === 'punc' && t.value === '(') {
-      const v = or();
+      const v = conditional();
       if (peek()?.value !== ')') throw new Error("Expected ')'");
       eat();
       return v;
@@ -138,7 +155,7 @@ export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Va
         eat();
         const args: Value[] = [];
         while (peek() && peek()!.value !== ')') {
-          args.push(or());
+          args.push(conditional());
           if (peek()?.value === ',') eat();
         }
         eat();
@@ -152,7 +169,7 @@ export function evaluate(src: string, scope: Scope, builtins: Builtins = {}): Va
     throw new Error(`Unexpected token '${t.value}'`);
   }
 
-  const result = or();
+  const result = conditional();
   if (pos < tokens.length) throw new Error(`Unexpected token '${peek()!.value}'`);
   return result;
 }

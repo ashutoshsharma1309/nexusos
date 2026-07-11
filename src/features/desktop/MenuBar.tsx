@@ -6,6 +6,7 @@ import { useWindowStore } from '@/features/window-manager/store';
 import { useLauncherStore } from '@/features/launcher/store';
 import { useNotificationStore } from '@/features/notifications/store';
 import { Clock } from './Clock';
+import { SystemStats } from './SystemStats';
 
 /** Top system menu bar: brand, focused-app title, search, notifications and clock. */
 export function MenuBar() {
@@ -30,6 +31,8 @@ export function MenuBar() {
       </div>
 
       <div className="flex-1" />
+
+      <SystemStats />
 
       <div className="glass-strong flex h-8 items-center gap-1 rounded-full px-1.5 shadow-popover">
         <button
